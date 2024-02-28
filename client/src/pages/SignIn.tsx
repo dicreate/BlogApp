@@ -1,6 +1,7 @@
 import { Alert, Button, Label, Spinner, TextInput } from "flowbite-react"
 import { Link, useNavigate } from "react-router-dom"
 import { ChangeEvent, FormEvent, useState } from "react"
+import useAuth from "../zustand/useAuth"
 
 interface Iform {
    username?: string,
@@ -9,9 +10,11 @@ interface Iform {
 }
 const SignIn = () => {
    const [formData, setFormData] = useState<Iform>({});
-   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-   const [loading, setLoading] = useState<boolean>(false);
+   /* const [errorMessage, setErrorMessage] = useState<string | null>(null);
+   const [loading, setLoading] = useState<boolean>(false); */
    const navigate = useNavigate();
+
+   const { errorMessage, setErrorMessage, loading, setLoading, setCurrentUser } = useAuth()
 
    const handleChange = (event: ChangeEvent<HTMLInputElement>): void => {
       setFormData({ ...formData, [event.target.id]: event.target.value.trim() });
@@ -35,6 +38,7 @@ const SignIn = () => {
             return setErrorMessage(data.message)
          }
          if (res.ok) {
+            setCurrentUser(data);
             navigate('/');
          }
       } catch (error) {
