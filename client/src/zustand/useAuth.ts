@@ -5,6 +5,7 @@ interface IUser {
    _id:string;
    username: string;
    email: string;
+   profilePicture: string;
 }
 
 interface IAuth {

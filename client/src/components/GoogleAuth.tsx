@@ -18,7 +18,7 @@ const GoogleAuth = () => {
          const resultsFromGoogle = await signInWithPopup(auth, provider)
          const res = await fetch("/api/auth/google", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: { "Content-Type": "application/json", "Cross-Origin-Opener-Policy": "same-origin-allow-popups" },
             body: JSON.stringify({
                name: resultsFromGoogle.user.displayName,
                email: resultsFromGoogle.user.email,
@@ -26,8 +26,6 @@ const GoogleAuth = () => {
             })
          })
          const data = await res.json()
-
-         console.log(data)
 
          if (res.ok) {
             navigate('/')
