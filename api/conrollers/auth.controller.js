@@ -77,6 +77,7 @@ export const google = async (req, res, next) => {
       const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
       const { password, ...rest } = user._doc;
       res
+        .setHeader("Cross-Origin-Opener-Policy", "same-origin-allow-popups")
         .status(200)
         .cookie("access_token", token, {
           httpOnly: true,
@@ -98,6 +99,7 @@ export const google = async (req, res, next) => {
       await newUser.save();
       const { password, ...rest } = newUser._doc;
       res
+        .setHeader("Cross-Origin-Opener-Policy", "same-origin-allow-popups")
         .status(200)
         .cookie("access_token", token, {
           httpOnly: true,
