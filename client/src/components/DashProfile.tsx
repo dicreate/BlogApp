@@ -3,11 +3,13 @@ import useAuth from "../zustand/useAuth"
 import { useEffect, useRef, useState } from "react";
 import { getDownloadURL, getStorage, ref, uploadBytesResumable } from "firebase/storage";
 import { app } from "../firebase";
+import { CircularProgressbar } from 'react-circular-progressbar';
+import 'react-circular-progressbar/dist/styles.css';
 const DashProfile = () => {
    const { currentUser } = useAuth();
    const [imageFile, setImageFile] = useState<File | null>(null);
-   const [imageFileUrl, setImageFileUrl] = useState('');
-   const [imageFileUploadingProgress, setImageFileUploadingProgress] = useState<string | null>(null);
+   const [imageFileUrl, setImageFileUrl] = useState<string | null>('');
+   const [imageFileUploadingProgress, setImageFileUploadingProgress] = useState<number | null>(null);
    const [imageFileUploadingError, setImageFileUploadingError] = useState<string | null>(null);
    console.log(imageFileUploadingProgress, imageFileUploadingError)
    const filePickerRef = useRef<HTMLInputElement | null>(null);
@@ -24,6 +26,7 @@ const DashProfile = () => {
       if (!imageFile) return;
 
       const uploadImage = () => {
+         setImageFileUploadingError(null);
          const storage = getStorage(app);
          const fileName = new Date().getTime() + imageFile!.name;
          const storageRef = ref(storage, fileName);
@@ -32,10 +35,13 @@ const DashProfile = () => {
             "state_changed",
             (snapshot) => {
                const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-               setImageFileUploadingProgress(progress.toFixed(0));
+               setImageFileUploadingProgress(Number(progress.toFixed(0)));
             },
             (error) => {
                setImageFileUploadingError(`Could not upload image (File must be less than 2MB). \n ${error}`);
+               setImageFileUploadingProgress(null);
+               setImageFile(null)
+               setImageFileUrl(null)
             },
             () => {
                getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
@@ -56,10 +62,32 @@ const DashProfile = () => {
          <form className="flex flex-col gap-4">
             <input type="file" accept='image/*' onChange={handleImageChange} ref={filePickerRef} hidden />
             <div
-               className="w-32 h-32 self-center cursor-pointer shadow-xl overflow-hidden rounded-full"
+               className="w-32 h-32 self-center cursor-pointer shadow-xl overflow-hidden rounded-full relative"
                onClick={() => filePickerRef.current?.click()}
             >
-               <img src={imageFileUrl || currentUser?.profilePicture} alt="user" className="rounded-full w-full h-full border-8 border-[lightgray] object-cover" />
+               {imageFileUploadingProgress && (
+                  <CircularProgressbar
+                     value={imageFileUploadingProgress || 0}
+                     text={`${imageFileUploadingProgress}%`}
+                     strokeWidth={5}
+                     styles={{
+                        root: {
+                           width: '100%',
+                           height: "100%",
+                           position: 'absolute',
+                           top: 0,
+                           left: 0,
+                        },
+                        path: {
+                           stroke: `rgba(62,152,199, ${imageFileUploadingProgress / 100})`
+                        }
+                     }}
+                  />
+               )}
+               <img
+                  src={imageFileUrl || currentUser?.profilePicture}
+                  alt="user"
+                  className={`rounded-full w-full h-full border-8 border-[lightgray] object-cover ${imageFileUploadingProgress && imageFileUploadingProgress < 100 && 'opacity-60'}`} />
             </div>
             {imageFileUploadingError && (
                <Alert color="failure">
