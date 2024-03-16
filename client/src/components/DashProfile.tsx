@@ -75,8 +75,6 @@ const DashProfile = () => {
       setFormData({ ...formData, [e.target.id]: e.target.value })
    }
 
-   console.log(formData)
-
    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       setUpdateUserError(null);
@@ -129,8 +127,6 @@ const DashProfile = () => {
          setLoading(false);
       }
    }
-
-   /* console.log(formData); */
 
    return (
       <div className="max-w-lg mx-auto p-3 w-full">
