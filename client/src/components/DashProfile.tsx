@@ -104,6 +104,25 @@ const DashProfile = () => {
       setFormData({ ...formData, [e.target.id]: e.target.value })
    }
 
+   const handleSignout = async () => {
+      try {
+         const res = await fetch('/api/user/signout', {
+            method: 'POST'
+         })
+
+         const data = await res.json()
+         if (!res.ok) {
+            console.log(data.message)
+         } else {
+            setCurrentUser(null);
+            setErrorMessage(null);
+            setLoading(false)
+         }
+      } catch (e) {
+         if (e instanceof Error) console.log(e.message)
+      }
+   }
+
    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       setUpdateUserError(null);
@@ -222,7 +241,7 @@ const DashProfile = () => {
          </form>
          <div className="text-red-500 flex justify-between mt-5">
             <span onClick={() => setShowModal(true)} className="cursor-pointer">Delete Account</span>
-            <span className="cursor-pointer">Sign Out</span>
+            <span onClick={handleSignout} className="cursor-pointer">Sign Out</span>
          </div>
          {updateUserSuccess && (
             <Alert color={'success'} className="mt-5">
