@@ -1,10 +1,11 @@
-import { Alert, Button, TextInput } from "flowbite-react"
+import { Alert, Button, Modal, TextInput } from "flowbite-react"
 import useAuth from "../zustand/useAuth"
 import { useEffect, useRef, useState } from "react";
 import { getDownloadURL, getStorage, ref, uploadBytesResumable } from "firebase/storage";
 import { app } from "../firebase";
 import { CircularProgressbar } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
+import { HiOutlineExclamationCircle } from "react-icons/hi2";
 
 interface IForm {
    username?: string,
@@ -14,7 +15,7 @@ interface IForm {
 }
 
 const DashProfile = () => {
-   const { currentUser, setLoading, setErrorMessage, setCurrentUser } = useAuth();
+   const { currentUser, setLoading, setErrorMessage, setCurrentUser, errorMessage } = useAuth();
    const [imageFile, setImageFile] = useState<File | null>(null);
    const [imageFileUrl, setImageFileUrl] = useState<string | null>('');
    const [imageFileUploadingProgress, setImageFileUploadingProgress] = useState<number | null>(null);
@@ -23,6 +24,7 @@ const DashProfile = () => {
    const [updateUserSuccess, setUpdateUserSuccess] = useState<null | string>(null);
    const [updatedUserError, setUpdateUserError] = useState<string | null>(null);
    const [formData, setFormData] = useState<IForm>({})
+   const [showModal, setShowModal] = useState<boolean>(false);
 
    const filePickerRef = useRef<HTMLInputElement | null>(null);
 
@@ -33,6 +35,33 @@ const DashProfile = () => {
          setImageFileUrl(URL.createObjectURL(file));
       }
    }
+
+   const handleDeleteUser = async () => {
+      setShowModal(false);
+      try {
+         setLoading(true);
+         setErrorMessage(null);
+         const res = await fetch(`/api/user/delete/${currentUser?._id}`, {
+            method: "DELETE",
+         })
+
+         const data = await res.json();
+
+         if (!res.ok) {
+            setErrorMessage(data)
+         } else {
+            setCurrentUser(null)
+            setErrorMessage(null)
+         }
+
+      } catch (error) {
+         if (error instanceof Error) {
+            setErrorMessage(error.message)
+         }
+      } finally {
+         setLoading(false)
+      }
+   };
 
    useEffect(() => {
       if (!imageFile) return;
@@ -192,7 +221,7 @@ const DashProfile = () => {
             </Button>
          </form>
          <div className="text-red-500 flex justify-between mt-5">
-            <span className="cursor-pointer">Delete Account</span>
+            <span onClick={() => setShowModal(true)} className="cursor-pointer">Delete Account</span>
             <span className="cursor-pointer">Sign Out</span>
          </div>
          {updateUserSuccess && (
@@ -207,6 +236,35 @@ const DashProfile = () => {
                </Alert>
             )
          }
+         {
+            errorMessage && (
+               <Alert color="failure" className="mt-5">
+                  {errorMessage}
+               </Alert>
+            )
+         }
+         <Modal
+            show={showModal}
+            onClose={() => setShowModal(false)}
+            popup
+            size={'md'}
+         >
+            <Modal.Header />
+            <Modal.Body>
+               <div className="text-center">
+                  <HiOutlineExclamationCircle className="h-14 w-14 text-gray-400 dark:text-gray-200 mb-4 mx-auto" />
+                  <h3 className="mb-5 text-lg text-gray-500 dark:text-gray-400">Are you sure you want to delete your account ?</h3>
+               </div>
+               <div className="flex justify-center gap-4">
+                  <Button color='failure' onClick={handleDeleteUser}>
+                     Yes, I'm sure
+                  </Button>
+                  <Button color='gray' onClick={() => setShowModal(false)}>
+                     No, cancel
+                  </Button>
+               </div>
+            </Modal.Body>
+         </Modal>
       </div>
    )
 }
