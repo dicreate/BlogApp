@@ -21,6 +21,10 @@ const userSchema = new Schema(
       default:
         "https://acdla.com/wp-content/uploads/2020/09/blank-profile-picture-973460_1280.png",
     },
+    isAdmin: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );
