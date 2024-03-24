@@ -6,6 +6,7 @@ interface IUser {
    username: string;
    email: string;
    profilePicture: string;
+   isAdmin: boolean;
 }
 
 interface IAuth {

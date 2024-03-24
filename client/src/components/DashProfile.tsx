@@ -6,6 +6,7 @@ import { app } from "../firebase";
 import { CircularProgressbar } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 import { HiOutlineExclamationCircle } from "react-icons/hi2";
+import { Link } from "react-router-dom";
 
 interface IForm {
    username?: string,
@@ -15,7 +16,7 @@ interface IForm {
 }
 
 const DashProfile = () => {
-   const { currentUser, setLoading, setErrorMessage, setCurrentUser, errorMessage } = useAuth();
+   const { currentUser, setLoading, setErrorMessage, setCurrentUser, errorMessage, loading } = useAuth();
    const [imageFile, setImageFile] = useState<File | null>(null);
    const [imageFileUrl, setImageFileUrl] = useState<string | null>('');
    const [imageFileUploadingProgress, setImageFileUploadingProgress] = useState<number | null>(null);
@@ -235,9 +236,22 @@ const DashProfile = () => {
                placeholder="password"
                onChange={handleChange}
             />
-            <Button type='submit' gradientDuoTone='purpleToBlue'>
-               Update
+            <Button type='submit' gradientDuoTone='purpleToBlue' disabled={loading || imageFileUploading}>
+               {loading || imageFileUploading ? "Loading..." : "Update"}
             </Button>
+            {
+               currentUser?.isAdmin && (
+                  <Link to={'/create-post'}>
+                     <Button
+                        type="button"
+                        gradientDuoTone={'pinkToOrange'}
+                        className="w-full"
+                     >
+                        Create a post
+                     </Button>
+                  </Link>
+               )
+            }
          </form>
          <div className="text-red-500 flex justify-between mt-5">
             <span onClick={() => setShowModal(true)} className="cursor-pointer">Delete Account</span>

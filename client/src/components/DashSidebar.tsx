@@ -5,7 +5,7 @@ import { Link, useLocation } from "react-router-dom";
 import useAuth from "../zustand/useAuth";
 
 export default function DashSidebar() {
-   const { setLoading, setErrorMessage, setCurrentUser } = useAuth();
+   const { setLoading, setErrorMessage, setCurrentUser, currentUser } = useAuth();
 
    const location = useLocation();
    const [tab, setTab] = useState('');
@@ -45,7 +45,7 @@ export default function DashSidebar() {
                <Link to="/dashboard?tab=profile">
                   <Sidebar.Item
                      active={tab === 'profile'}
-                     icon={HiUser} label={"user"}
+                     icon={HiUser} label={currentUser?.isAdmin ? "admin" : "user"}
                      labelColor="dark"
                      className='cursor-pointer'
                      as="div"
