@@ -7,7 +7,27 @@ import useAuth from "../zustand/useAuth"
 const Header = () => {
    const path = useLocation().pathname;
    const { toggleTheme, theme } = useTheme()
-   const { currentUser } = useAuth()
+   const { currentUser, setLoading, setErrorMessage, setCurrentUser } = useAuth();
+
+
+   const handleSignout = async () => {
+      try {
+         const res = await fetch('/api/user/signout', {
+            method: 'POST'
+         })
+
+         const data = await res.json()
+         if (!res.ok) {
+            console.log(data.message)
+         } else {
+            setCurrentUser(null);
+            setErrorMessage(null);
+            setLoading(false)
+         }
+      } catch (e) {
+         if (e instanceof Error) console.log(e.message)
+      }
+   }
 
    return (
       <Navbar className="border-b-2">
@@ -54,7 +74,7 @@ const Header = () => {
                            <Dropdown.Item>Profile</Dropdown.Item>
                         </Link>
                         <Dropdown.Divider />
-                        <Link to={"Sign out"}>
+                        <Link to={"Sign out"} onClick={handleSignout}>
                            <Dropdown.Item>Sign Out</Dropdown.Item>
                         </Link>
                      </Dropdown>
