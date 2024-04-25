@@ -11,5 +11,9 @@ export default {
     extend: {},
   },
   // eslint-disable-next-line no-undef
-  plugins: [import("flowbite/plugin"), require("daisyui")],
+  plugins: [
+    import("flowbite/plugin"),
+    require("daisyui"),
+    require("tailwind-scrollbar"),
+  ],
 };
