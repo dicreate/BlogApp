@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom"
-import { About, Dashboard, Home, Projects, SignIn, SignUp, CreatePost } from "./pages"
+import { About, Dashboard, Home, Projects, SignIn, SignUp, CreatePost, UpdatePost } from "./pages"
 import { Header, Footer, PrivateRoute, OnlyAdminRoute } from "./components"
 function App() {
 
@@ -16,6 +16,9 @@ function App() {
         </Route>
         <Route element={<OnlyAdminRoute />}>
           <Route path="/create-post" element={<CreatePost />} />
+        </Route>
+        <Route element={<OnlyAdminRoute />}>
+          <Route path="/update-post/:postId" element={<UpdatePost />} />
         </Route>
         <Route path="/projects" element={<Projects />} />
       </Routes>
