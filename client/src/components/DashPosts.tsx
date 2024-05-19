@@ -23,6 +23,8 @@ interface IUserPosts {
 const DashPosts = () => {
    const { currentUser } = useAuth();
    const [userPosts, setUserPosts] = useState<IUserPosts | null>(null);
+   const [showMore, setShowMore] = useState(true);
+
    useEffect(() => {
       const fetchPosts = async () => {
          try {
@@ -30,6 +32,9 @@ const DashPosts = () => {
             const data = response.data;
             if (response.statusText == "OK") {
                setUserPosts(data)
+               if (data.posts.length < 9) {
+                  setShowMore(false);
+               }
             }
          } catch (error) {
             if (error instanceof Error) {
@@ -43,8 +48,34 @@ const DashPosts = () => {
       // eslint-disable-next-line react-hooks/exhaustive-deps
    }, [currentUser?._id])
 
+   const handleShowMore = async (): Promise<void> => {
+      const startIndex = userPosts?.posts.length;
+      try {
+         const res = await axios.get(`/api/post/getposts?userid=${currentUser?._id}&startIndex=${startIndex}`);
+         const data = res.data;
+         if (res.statusText === "OK") {
+            setUserPosts(prev => {
+               if (prev) {
+                  return {
+                     ...prev,
+                     posts: [...prev.posts, ...data.posts],
+                     totalPosts: data.totalPosts,
+                     lastMonthPosts: data.lastMonthPosts
+                  };
+               }
+               return null;
+            });
+            if (data.posts.length < 9) {
+               setShowMore(false)
+            }
+         }
+      } catch (error) {
+         error instanceof Error ? console.log(error) : null;
+      }
+   }
+
    return (
-      <div className="table-auto overflow-x-scroll md:mx-auto p-3 scrollbar scrollbar-track-slate-100 scrollbar-thumb-slate-300 dark:scrollbar-track-slate-700 dark:scrollbar-thumb-slate-500">
+      <div className="table-auto overflow-x-auto md:mx-auto p-3 scrollbar scrollbar-track-slate-100 scrollbar-thumb-slate-300 dark:scrollbar-track-slate-700 dark:scrollbar-thumb-slate-500">
          {currentUser?.isAdmin && userPosts?.totalPosts && userPosts?.totalPosts > 0 ? (
             <>
                <Table hoverable className="shadow-md">
@@ -59,8 +90,8 @@ const DashPosts = () => {
                      </Table.HeadCell>
                   </Table.Head>
                   {
-                     userPosts.posts.map((post: IPost) => (
-                        <Table.Body className="divide-y">
+                     userPosts.posts.map((post: IPost, index: number) => (
+                        <Table.Body className="divide-y" key={index}>
                            <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800 ">
                               <Table.Cell>{new Date(post.updatedAt).toLocaleDateString()}</Table.Cell>
                               <Table.Cell>
@@ -89,6 +120,13 @@ const DashPosts = () => {
                      ))
                   }
                </Table>
+               {
+                  showMore && (
+                     <button onClick={handleShowMore} className="w-full text-teal-500 self-center text-sm py-7">
+                        Show more
+                     </button>
+                  )
+               }
             </>
          ) : (
             <p>You have no posts yet!</p>
