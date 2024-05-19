@@ -78,7 +78,7 @@ const DashUsers = () => {
    const handleDeleteUser = async () => {
       setShowModal(false);
       try {
-         const res = await axios.delete(`/api/user/deleteuser/${userIdToDelete}/${currentUser?._id}`)
+         const res = await axios.delete(`/api/user/delete/${userIdToDelete}`)
          const data = res.data;
          if (res.statusText == "OK") {
             setUsersInfo((prev) => {
