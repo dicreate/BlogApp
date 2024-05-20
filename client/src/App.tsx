@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom"
-import { About, Dashboard, Home, Projects, SignIn, SignUp, CreatePost, UpdatePost } from "./pages"
+import { About, Dashboard, Home, Projects, SignIn, SignUp, CreatePost, UpdatePost, PostPage } from "./pages"
 import { Header, Footer, PrivateRoute, OnlyAdminRoute } from "./components"
 function App() {
 
@@ -21,6 +21,7 @@ function App() {
           <Route path="/update-post/:postId" element={<UpdatePost />} />
         </Route>
         <Route path="/projects" element={<Projects />} />
+        <Route path="/post/:postSlug" element={<PostPage />} />
       </Routes>
       <Footer />
     </BrowserRouter>
