@@ -2,14 +2,15 @@ import axios from "axios";
 import { Button, Spinner } from "flowbite-react";
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import CallToAction from "../components/CallToAction";
+import { CommentSection, CallToAction } from "../components";
 
 interface IPost {
+   _id: string;
    image?: string;
-   title?: string;
+   title: string;
    category?: string;
-   content?: string;
-   createdAt?: string;
+   content: string;
+   createdAt: string;
 }
 
 const PostPage = () => {
@@ -77,6 +78,7 @@ const PostPage = () => {
             <div className="max-w-4xl mx-auto w-full">
                <CallToAction />
             </div>
+            <CommentSection postId={post!._id} />
          </main>
          : <div>Something went wrong!</div>
    )
