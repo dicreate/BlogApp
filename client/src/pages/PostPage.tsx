@@ -2,6 +2,7 @@ import axios from "axios";
 import { Button, Spinner } from "flowbite-react";
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import CallToAction from "../components/CallToAction";
 
 interface IPost {
    image?: string;
@@ -71,6 +72,10 @@ const PostPage = () => {
                <span className="italic">{post && post.content && Math.ceil(post.content.length / 1000)} mins read</span>
             </div>
             <div className="p-3 max-w-4xl mx-auto w-full post-content" dangerouslySetInnerHTML={{ __html: post?.content || '' }}>
+
+            </div>
+            <div className="max-w-4xl mx-auto w-full">
+               <CallToAction />
             </div>
          </main>
          : <div>Something went wrong!</div>
