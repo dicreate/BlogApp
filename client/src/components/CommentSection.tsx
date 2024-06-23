@@ -64,7 +64,10 @@ const CommentSection = ({ postId }: ICommentSection) => {
                      placeholder="Add a comment..."
                      rows={3}
                      maxLength={200}
-                     onChange={(e) => setComment(e.target.value)}
+                     onChange={(e) => {
+                        setComment(e.target.value)
+                        commentError !== null && setCommentError(null)
+                     }}
                      value={comment}
                   />
                   <div className="flex justify-between items-center mt-5">
