@@ -1,10 +1,11 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom"
 import { About, Dashboard, Home, Projects, SignIn, SignUp, CreatePost, UpdatePost, PostPage } from "./pages"
-import { Header, Footer, PrivateRoute, OnlyAdminRoute } from "./components"
+import { Header, Footer, PrivateRoute, OnlyAdminRoute, ScrollToTop } from "./components"
 function App() {
 
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <Header />
       <Routes>
         <Route path="/" element={<Home />} />
