@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import useAuth from "../zustand/useAuth";
 import { Alert, Button, Textarea } from "flowbite-react";
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import axios from "axios";
 interface ICommentSection {
    postId: string;
@@ -11,6 +11,9 @@ const CommentSection = ({ postId }: ICommentSection) => {
    const { currentUser } = useAuth();
    const [comment, setComment] = useState<string>('');
    const [commentError, setCommentError] = useState<string | null>(null);
+   const [comments, setComments] = useState([]);
+
+   console.log(comments)
 
    const handleSubmit = async (e: FormEvent) => {
       e.preventDefault();
@@ -20,11 +23,13 @@ const CommentSection = ({ postId }: ICommentSection) => {
       }
 
       try {
+         console.log('вход в try')
          const res = await axios.post('/api/comment/create', { content: comment, postId, userId: currentUser?._id })
-
+         console.log('не работает')
          if (res.statusText == "OK") {
             setComment('');
             setCommentError(null);
+            console.log(res)
          }
 
       } catch (error) {
@@ -32,7 +37,44 @@ const CommentSection = ({ postId }: ICommentSection) => {
             setCommentError(error.message)
          }
       }
+      /* вариант без axios      try {
+              const res = await fetch('/api/comment/create', {
+                 method: "POST",
+                 headers: {
+                    'Content-Type': "application/json"
+                 },
+                 body: JSON.stringify({
+                    content: comment,
+                    postId,
+                    userId: currentUser?._id,
+                 })
+              });
+     
+              if (res.ok) {
+                 setComment('');
+                 setCommentError(null);
+              }
+           } catch (error) {
+              if (error instanceof Error) {
+                 setCommentError(error.message)
+              }
+     
+           } */
    }
+
+   useEffect(() => {
+      const getComments = async () => {
+         try {
+            const res = await axios.get(`/api/comment/getPostComments/${postId}`)
+            const data = res.data;
+            setComments(data);
+
+         } catch (error) {
+            error instanceof Error && console.log(error.message)
+         }
+      }
+      getComments();
+   }, [postId])
 
    return (
       <div className="max-w-2xl mx-auto w-full p-3">
